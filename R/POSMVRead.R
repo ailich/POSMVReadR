@@ -10,19 +10,21 @@
 #' @export
 
 POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
-  if(dir.exists(input)){
+  if(length(input)==1){
+    if(dir.exists(input)){
     input<- list.files(input, full.names = TRUE)
-  }
+    }
+  } #Read files in directory
 
   n_files<- length(input)
 
   if(n_files > 1 | append){
     tmp_name<- tempfile(tmpdir = tmpdir, fileext = ".csv")
-  }
+  } #Create name for temporary file
 
   if(n_files==1 & !append){
     system2("python",
-            args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  input,  "-position"),
+            args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input),  "-position"),
             stdout = output)
   }
 
@@ -30,11 +32,11 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
     for (i in seq_along(input)) {
       if(i==1){
         system2("python",
-              args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  input[i],  "-position"),
+              args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
               stdout = output)
         } else{
           system2("python",
-                  args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  input[i],  "-position"),
+                  args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
                   stdout = tmp_name)
           file.append(output, tmp_name)
           file.remove(tmp_name)
@@ -42,7 +44,7 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
 
   if(n_files==1 & append){
     system2("python",
-            args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  input,  "-position"),
+            args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input),  "-position"),
             stdout = tmp_name)
     file.append(output, tmp_name)
     file.remove(tmp_name)
@@ -51,10 +53,10 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
   if(n_files > 1 & append){
     for (i in seq_along(input)) {
       system2("python",
-              args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  input[i],  "-position"),
+              args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
               stdout = tmp_name)
         file.append(output, tmp_name)
         file.remove(tmp_name)
     }}
-  invisible(NULL)
+  invisible(NULL) #Don't return anything
 }
