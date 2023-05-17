@@ -1,7 +1,7 @@
 #' Extract information from binary Applanix POSMV files and write to plain text
 #'
 #' Extract information from binary Applanix POSMV files and write to plain text. Note this function requires python 3 to be installed on your computer.
-#' @param input Character vector of file names or a directory containing applanix binary files
+#' @param input Character vector of file names or a directory containing Applanix POSMV binary files
 #' @param output Output file name
 #' @param append Logical indicating whether the output should be appended to an existing output
 #' @param tmpdir character vector giving the directory name for temporary files to be stored

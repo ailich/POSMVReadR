@@ -7,7 +7,7 @@
 POSMVRead(input, output, append = FALSE, tmpdir = tempdir())
 }
 \arguments{
-\item{input}{Character vector of file names or a directory containing applanix binary files}
+\item{input}{Character vector of file names or a directory containing Applanix POSMV binary files}
 
 \item{output}{Output file name}
 
