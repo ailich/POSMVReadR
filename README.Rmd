@@ -20,10 +20,14 @@ This package can be installed directly from github using the `remotes` package u
 Once the package is installed it can be loaded using `library(POSMVReadR)`
 
 This package contains a function called `POSMVRead` which has arguments:
-`input`: which is a character vector of file names or a directory containing Applanix POSMV binary files
-`output`: The name of the file for the output
-`append`: A logical whether the output should be appended to an existing output
-`tmpdir`: character vector giving the directory name for temporary files to be stored
+
+- `input`: which is a character vector of file names or a directory containing Applanix POSMV binary files
+
+- `output`: The name of the file for the output
+
+- `append`: A logical whether the output should be appended to an existing output
+
+- `tmpdir`: character vector giving the directory name for temporary files to be stored
 
 For example:
 
