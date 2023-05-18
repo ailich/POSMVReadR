@@ -2,11 +2,15 @@
 #'
 #' Extract information from binary Applanix POSMV files and write to plain text. Note this function requires python 3 to be installed on your computer.
 #' @param input Character vector of file names or a directory containing Applanix POSMV binary files
-#' @param output Output file name
+#' @param output Output file name for resultant csv file.
 #' @param append Logical indicating whether the output should be appended to an existing output
 #' @param tmpdir character vector giving the directory name for temporary files to be stored
+#' @importFrom tidyr separate
+#' @importFrom lubridate ymd_hms
+#' @importFrom readr read_csv
+#' @importFrom readr write_csv
 #' @details
-#' This R function uses system calls to a python script written by Paul Kennedy (https://github.com/pktrigg/posmv)
+#' This R function uses system calls to a python script written by Paul Kennedy (https://github.com/pktrigg/posmv). Data is then read into R to do some tidying so it can be exported as a clean csv.
 #' @export
 
 POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
@@ -26,6 +30,12 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
     system2("python",
             args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input),  "-position"),
             stdout = output)
+    df<- suppressWarnings(suppressMessages(read_csv(output))) #Read data into R to fix formatting
+    df[,3:8]<- df[,2:7]
+    df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+    df$Time<- ymd_hms(paste(df$Date, df$Time))
+    df<- df[,names(df)!="Date"]
+    write_csv(df, file = output, append = FALSE) #re-export
   }
 
   if(n_files > 1 & !append){
@@ -34,11 +44,22 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
         system2("python",
               args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
               stdout = output)
+        df<- suppressWarnings(suppressMessages(read_csv(output))) #Read data into R to fix formatting
+        df[,3:8]<- df[,2:7]
+        df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+        df$Time<- ymd_hms(paste(df$Date, df$Time))
+        df<- df[,names(df)!="Date"]
+        write_csv(df, file = output, append = FALSE) #re-export
         } else{
           system2("python",
                   args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
                   stdout = tmp_name)
-          file.append(output, tmp_name)
+          df<- suppressWarnings(suppressMessages(read_csv(tmp_name))) #Read data into R to fix formatting
+          df[,3:8]<- df[,2:7]
+          df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+          df$Time<- ymd_hms(paste(df$Date, df$Time))
+          df<- df[,names(df)!="Date"]
+          write_csv(df, file= output, append = TRUE) #re-export
           file.remove(tmp_name)
         }}}
 
@@ -46,7 +67,12 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
     system2("python",
             args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input),  "-position"),
             stdout = tmp_name)
-    file.append(output, tmp_name)
+    df<- suppressWarnings(suppressMessages(read_csv(tmp_name))) #Read data into R to fix formatting
+    df[,3:8]<- df[,2:7]
+    df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+    df$Time<- ymd_hms(paste(df$Date, df$Time))
+    df<- df[,names(df)!="Date"]
+    write_csv(df, file = output, append = TRUE) #re-export
     file.remove(tmp_name)
   }
 
@@ -55,8 +81,12 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
       system2("python",
               args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
               stdout = tmp_name)
-        file.append(output, tmp_name)
-        file.remove(tmp_name)
-    }}
+      df<- suppressWarnings(suppressMessages(read_csv(tmp_name))) #Read data into R to fix formatting
+      df[,3:8]<- df[,2:7]
+      df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+      df$Time<- ymd_hms(paste(df$Date, df$Time))
+      df<- df[,names(df)!="Date"]
+      write_csv(df, file = output, append = TRUE) #re-export
+      file.remove(tmp_name)}}
   invisible(NULL) #Don't return anything
 }

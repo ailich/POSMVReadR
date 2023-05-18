@@ -9,7 +9,7 @@ POSMVRead(input, output, append = FALSE, tmpdir = tempdir())
 \arguments{
 \item{input}{Character vector of file names or a directory containing Applanix POSMV binary files}
 
-\item{output}{Output file name}
+\item{output}{Output file name for resultant csv file.}
 
 \item{append}{Logical indicating whether the output should be appended to an existing output}
 
@@ -19,5 +19,5 @@ POSMVRead(input, output, append = FALSE, tmpdir = tempdir())
 Extract information from binary Applanix POSMV files and write to plain text. Note this function requires python 3 to be installed on your computer.
 }
 \details{
-This R function uses system calls to a python script written by Paul Kennedy (https://github.com/pktrigg/posmv)
+This R function uses system calls to a python script written by Paul Kennedy (https://github.com/pktrigg/posmv). Data is then read into R to do some tidying so it can be exported as a clean csv.
 }

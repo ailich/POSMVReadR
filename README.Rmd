@@ -11,7 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # POSMVReadR
-This R package converts binary Applanix POSMV files to plain text. It provides a convinient R interface to a [python script written by Paul Kennedy](https://github.com/pktrigg/posmv). As such, it requires [Python 3](https://www.python.org/downloads/) to be installed.
+This R package converts binary Applanix POSMV files to plain text. It provides a convenient R interface to a [python script written by Paul Kennedy](https://github.com/pktrigg/posmv) and performs some data tidying so that files can be easily read into other programs as csv's. As such, it requires [Python 3](https://www.python.org/downloads/) to be installed.
 
 # Package Installation
 This package can be installed directly from github using the `remotes` package using `remotes::install_github("ailich/POSMVReadR")`. To install the remotes package, use `install.packages("remotes")`.

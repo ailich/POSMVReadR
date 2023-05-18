@@ -5,6 +5,10 @@ Authors@R:
     person("Alexander", "Ilich", , "ailich@usf.edu", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
 Description: R package to extract information from binary Applanix POSMV files and write them to plain texts. This R package calls a python script created by Paul Kennedy (https://github.com/pktrigg/posmv).
+Imports:
+  tidyr,
+  lubridate,
+  readr
 License: MIT + file LICENSE
 BugReports: https://github.com/ailich/POSMVReadR/issues
 SystemRequirements: Python 3
