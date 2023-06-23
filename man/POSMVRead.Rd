@@ -4,12 +4,14 @@
 \alias{POSMVRead}
 \title{Extract information from binary Applanix POSMV files and write to plain text}
 \usage{
-POSMVRead(input, output, append = FALSE, tmpdir = tempdir())
+POSMVRead(input, output, recursive = TRUE, append = FALSE, tmpdir = tempdir())
 }
 \arguments{
 \item{input}{Character vector of file names or a directory containing Applanix POSMV binary files}
 
 \item{output}{Output file name for resultant csv file.}
+
+\item{recursive}{logical (default is TRUE). Should the listing recurse into directories?}
 
 \item{append}{Logical indicating whether the output should be appended to an existing output}
 

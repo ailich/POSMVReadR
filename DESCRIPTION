@@ -1,6 +1,6 @@
 Package: POSMVReadR
 Title: Extract Information From Binary Applanix POSMV Files
-Version: 0.1
+Version: 0.2
 Authors@R: 
     person("Alexander", "Ilich", , "ailich@usf.edu", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
@@ -8,7 +8,8 @@ Description: R package to extract information from binary Applanix POSMV files a
 Imports:
   tidyr,
   lubridate,
-  readr
+  readr,
+  tibble
 License: MIT + file LICENSE
 BugReports: https://github.com/ailich/POSMVReadR/issues
 SystemRequirements: Python 3

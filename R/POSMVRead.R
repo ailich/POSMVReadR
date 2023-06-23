@@ -3,20 +3,22 @@
 #' Extract information from binary Applanix POSMV files and write to plain text. Note this function requires python 3 to be installed on your computer.
 #' @param input Character vector of file names or a directory containing Applanix POSMV binary files
 #' @param output Output file name for resultant csv file.
+#' @param recursive logical (default is TRUE). Should the listing recurse into directories?
 #' @param append Logical indicating whether the output should be appended to an existing output
 #' @param tmpdir character vector giving the directory name for temporary files to be stored
 #' @importFrom tidyr separate
 #' @importFrom lubridate ymd_hms
 #' @importFrom readr read_csv
 #' @importFrom readr write_csv
+#' @importFrom tibble tibble
 #' @details
 #' This R function uses system calls to a python script written by Paul Kennedy (https://github.com/pktrigg/posmv). Data is then read into R to do some tidying so it can be exported as a clean csv.
 #' @export
 
-POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
+POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, tmpdir= tempdir()){
   if(length(input)==1){
     if(dir.exists(input)){
-    input<- list.files(input, full.names = TRUE)
+    input<- list.files(input, recursive = recursive, full.names = TRUE)
     }
   } #Read files in directory
 
@@ -31,12 +33,24 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
             args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input),  "-position"),
             stdout = output)
     df<- suppressWarnings(suppressMessages(read_csv(output))) #Read data into R to fix formatting
-    df[,3:8]<- df[,2:7]
-    df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
-    df$Time<- ymd_hms(paste(df$Date, df$Time))
-    df<- df[,names(df)!="Date"]
-    write_csv(df, file = output, append = FALSE) #re-export
-  }
+    if(nrow(df)==0){
+      df<- tibble(Time=ymd_hms(),
+                  Latitude = numeric(),
+                  Longitude = numeric(),
+                  Altitude = numeric(),
+                  Pitch = numeric(),
+                  Roll = numeric(),
+                  Heading = numeric(),
+                  Speed = numeric())
+      write_csv(df, file = output, append = FALSE) #re-export
+    } else{
+      df[,3:8]<- df[,2:7]
+      df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+      df$Time<- ymd_hms(paste(df$Date, df$Time))
+      df$Latitude<- as.numeric(df$Latitude)
+      df<- df[,names(df)!="Date"]
+      write_csv(df, file = output, append = FALSE) #re-export
+  }}
 
   if(n_files > 1 & !append){
     for (i in seq_along(input)) {
@@ -45,36 +59,56 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
               args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
               stdout = output)
         df<- suppressWarnings(suppressMessages(read_csv(output))) #Read data into R to fix formatting
-        df[,3:8]<- df[,2:7]
-        df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
-        df$Time<- ymd_hms(paste(df$Date, df$Time))
-        df<- df[,names(df)!="Date"]
-        write_csv(df, file = output, append = FALSE) #re-export
+        if(nrow(df)==0){
+          df<- tibble(Time=ymd_hms(),
+                      Latitude = numeric(),
+                      Longitude = numeric(),
+                      Altitude = numeric(),
+                      Pitch = numeric(),
+                      Roll = numeric(),
+                      Heading = numeric(),
+                      Speed = numeric())
+          write_csv(df, file = output, append = FALSE) #re-export
         } else{
+          df[,3:8]<- df[,2:7]
+          df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+          df$Time<- ymd_hms(paste(df$Date, df$Time))
+          df$Latitude<- as.numeric(df$Latitude)
+          df<- df[,names(df)!="Date"]
+          write_csv(df, file = output, append = FALSE) #re-export
+        }} else{
           system2("python",
                   args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
                   stdout = tmp_name)
           df<- suppressWarnings(suppressMessages(read_csv(tmp_name))) #Read data into R to fix formatting
-          df[,3:8]<- df[,2:7]
-          df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
-          df$Time<- ymd_hms(paste(df$Date, df$Time))
-          df<- df[,names(df)!="Date"]
-          write_csv(df, file= output, append = TRUE) #re-export
-          file.remove(tmp_name)
-        }}}
+          if(nrow(df)==0){
+            file.remove(tmp_name)
+          } else{
+            df[,3:8]<- df[,2:7]
+            df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+            df$Time<- ymd_hms(paste(df$Date, df$Time))
+            df$Latitude<- as.numeric(df$Latitude)
+            df<- df[,names(df)!="Date"]
+            write_csv(df, file= output, append = TRUE) #re-export
+            file.remove(tmp_name)
+        }}}}
 
   if(n_files==1 & append){
     system2("python",
             args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input),  "-position"),
             stdout = tmp_name)
     df<- suppressWarnings(suppressMessages(read_csv(tmp_name))) #Read data into R to fix formatting
-    df[,3:8]<- df[,2:7]
-    df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
-    df$Time<- ymd_hms(paste(df$Date, df$Time))
-    df<- df[,names(df)!="Date"]
-    write_csv(df, file = output, append = TRUE) #re-export
-    file.remove(tmp_name)
-  }
+    if(nrow(df)==0){
+      file.remove(tmp_name)
+    } else{
+      df[,3:8]<- df[,2:7]
+      df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+      df$Time<- ymd_hms(paste(df$Date, df$Time))
+      df$Latitude<- as.numeric(df$Latitude)
+      df<- df[,names(df)!="Date"]
+      write_csv(df, file = output, append = TRUE) #re-export
+      file.remove(tmp_name)
+      }}
 
   if(n_files > 1 & append){
     for (i in seq_along(input)) {
@@ -82,11 +116,15 @@ POSMVRead<- function(input, output, append=FALSE, tmpdir= tempdir()){
               args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
               stdout = tmp_name)
       df<- suppressWarnings(suppressMessages(read_csv(tmp_name))) #Read data into R to fix formatting
-      df[,3:8]<- df[,2:7]
-      df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
-      df$Time<- ymd_hms(paste(df$Date, df$Time))
-      df<- df[,names(df)!="Date"]
-      write_csv(df, file = output, append = TRUE) #re-export
-      file.remove(tmp_name)}}
+      if(nrow(df)==0){
+        file.remove(tmp_name)
+      } else{
+        df[,3:8]<- df[,2:7]
+        df<- separate(df, Date, into = c("Date", "Time", "Latitude"), sep = " ")
+        df$Time<- ymd_hms(paste(df$Date, df$Time))
+        df$Latitude<- as.numeric(df$Latitude)
+        df<- df[,names(df)!="Date"]
+        write_csv(df, file = output, append = TRUE) #re-export
+        file.remove(tmp_name)}}}
   invisible(NULL) #Don't return anything
 }
