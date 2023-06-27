@@ -5,6 +5,7 @@
 #' @param output Output file name for resultant csv file.
 #' @param recursive logical (default is TRUE). Should the listing recurse into directories?
 #' @param append Logical indicating whether the output should be appended to an existing output
+#' @param pattern Pattern of file names to search for in directory. Default is to is a file extension of just numbers (e.g. '.000').
 #' @param tmpdir character vector giving the directory name for temporary files to be stored
 #' @importFrom tidyr separate
 #' @importFrom lubridate ymd_hms
@@ -15,10 +16,11 @@
 #' This R function uses system calls to a python script written by Paul Kennedy (https://github.com/pktrigg/posmv). Data is then read into R to do some tidying so it can be exported as a clean csv.
 #' @export
 
-POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, tmpdir= tempdir()){
+POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.\\d+", tmpdir= tempdir()){
   if(length(input)==1){
     if(dir.exists(input)){
-    input<- list.files(input, recursive = recursive, full.names = TRUE)
+    input<- list.files(input, pattern = pattern, recursive = recursive, full.names = TRUE)
+    input<- input[!dir.exists(input)] #Don't include directories in file list
     }
   } #Read files in directory
 

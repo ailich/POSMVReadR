@@ -4,7 +4,14 @@
 \alias{POSMVRead}
 \title{Extract information from binary Applanix POSMV files and write to plain text}
 \usage{
-POSMVRead(input, output, recursive = TRUE, append = FALSE, tmpdir = tempdir())
+POSMVRead(
+  input,
+  output,
+  recursive = TRUE,
+  append = FALSE,
+  pattern = "\\\\.\\\\d+",
+  tmpdir = tempdir()
+)
 }
 \arguments{
 \item{input}{Character vector of file names or a directory containing Applanix POSMV binary files}
@@ -14,6 +21,8 @@ POSMVRead(input, output, recursive = TRUE, append = FALSE, tmpdir = tempdir())
 \item{recursive}{logical (default is TRUE). Should the listing recurse into directories?}
 
 \item{append}{Logical indicating whether the output should be appended to an existing output}
+
+\item{pattern}{Pattern of file names to search for in directory. Default is to is a file extension of just numbers (e.g. '.000').}
 
 \item{tmpdir}{character vector giving the directory name for temporary files to be stored}
 }
