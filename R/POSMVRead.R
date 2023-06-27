@@ -6,6 +6,7 @@
 #' @param recursive logical (default is TRUE). Should the listing recurse into directories?
 #' @param append Logical indicating whether the output should be appended to an existing output
 #' @param pattern Pattern of file names to search for in directory. Default is to is a file extension of just numbers (e.g. '.000').
+#' @param verbose logical indicating whether to print progress to display (deafult is FALSE)
 #' @param tmpdir character vector giving the directory name for temporary files to be stored
 #' @importFrom tidyr separate
 #' @importFrom lubridate ymd_hms
@@ -16,7 +17,7 @@
 #' This R function uses system calls to a python script written by Paul Kennedy (https://github.com/pktrigg/posmv). Data is then read into R to do some tidying so it can be exported as a clean csv.
 #' @export
 
-POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.\\d+", tmpdir= tempdir()){
+POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.\\d+", verbose=FALSE, tmpdir= tempdir()){
   if(length(input)==1){
     if(dir.exists(input)){
     input<- list.files(input, pattern = pattern, recursive = recursive, full.names = TRUE)
@@ -31,6 +32,10 @@ POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.
   } #Create name for temporary file
 
   if(n_files==1 & !append){
+    if(verbose){
+      print("1 of 1")
+      print(basename(input))
+      }
     system2("python",
             args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input),  "-position"),
             stdout = output)
@@ -56,6 +61,10 @@ POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.
 
   if(n_files > 1 & !append){
     for (i in seq_along(input)) {
+      if(verbose){
+        print(paste(i, "of", n_files))
+        print(basename(input[i]))
+      }
       if(i==1){
         system2("python",
               args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
@@ -96,6 +105,10 @@ POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.
         }}}}
 
   if(n_files==1 & append){
+    if(verbose){
+      print("1 of 1")
+      print(basename(input))
+    }
     system2("python",
             args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input),  "-position"),
             stdout = tmp_name)
@@ -114,6 +127,10 @@ POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.
 
   if(n_files > 1 & append){
     for (i in seq_along(input)) {
+      if(verbose){
+        print(paste(i, "of", n_files))
+        print(basename(input[i]))
+      }
       system2("python",
               args= c(system.file("python/POSMVRead.py", package = "POSMVReadR"), "-i",  shQuote(input[i]),  "-position"),
               stdout = tmp_name)

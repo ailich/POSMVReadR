@@ -10,6 +10,7 @@ POSMVRead(
   recursive = TRUE,
   append = FALSE,
   pattern = "\\\\.\\\\d+",
+  verbose = FALSE,
   tmpdir = tempdir()
 )
 }
@@ -23,6 +24,8 @@ POSMVRead(
 \item{append}{Logical indicating whether the output should be appended to an existing output}
 
 \item{pattern}{Pattern of file names to search for in directory. Default is to is a file extension of just numbers (e.g. '.000').}
+
+\item{verbose}{logical indicating whether to print progress to display (deafult is FALSE)}
 
 \item{tmpdir}{character vector giving the directory name for temporary files to be stored}
 }
