@@ -145,5 +145,6 @@ POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.
         df<- df[,names(df)!="Date"]
         write_csv(df, file = output, append = TRUE) #re-export
         file.remove(tmp_name)}}}
+  gc() # Clean up to prevent hanging
   invisible(NULL) #Don't return anything
 }
