@@ -17,7 +17,7 @@
 #' This R function uses system calls to a python script written by Paul Kennedy (https://github.com/pktrigg/posmv). Data is then read into R to do some tidying so it can be exported as a clean csv.
 #' @export
 
-POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.\\d+", verbose=FALSE, tmpdir= tempdir()){
+POSMVRead<- function(input, output, recursive=TRUE, append=FALSE, pattern = "\\.\\d+$", verbose=FALSE, tmpdir= tempdir()){
   if(length(input)==1){
     if(dir.exists(input)){
     input<- list.files(input, pattern = pattern, recursive = recursive, full.names = TRUE)
